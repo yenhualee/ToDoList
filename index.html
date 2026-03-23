@@ -84,10 +84,10 @@
             z-index: 0;
         }
         
-        /* 日曆固定 350x150 優化佈局 */
+        /* 日曆固定 300x150 優化佈局 */
         .calendar-container {
             position: relative;
-            width: 350px;
+            width: 300px;
             height: 150px;
             background: var(--muji-card-bg);
             border-radius: 16px;
@@ -227,10 +227,15 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--muji-accent); border-radius: 10px; opacity: 0.3; }
 
-        /* 特殊樣式：已劃掉的選項 */
-        .struck-out {
-            text-decoration: line-through;
-            opacity: 0.3 !important;
+        /* 特殊樣式：已探店的項目 */
+        .visited-item {
+            opacity: 0.5 !important;
+            background-color: var(--muji-bg) !important;
+        }
+
+        /* 勵志小語過度效果 */
+        #quoteDisplay {
+            transition: opacity 0.5s ease-in-out;
         }
     </style>
 </head>
@@ -238,8 +243,8 @@
 
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row">
         
-        <!-- 左側側邊欄 - 寬度調整以容納 350px 日曆 -->
-        <aside class="lg:w-[400px] w-full p-6 lg:fixed lg:h-screen flex flex-col items-center lg:items-start z-30">
+        <!-- 左側側邊欄 - 寬度調整以容納 300px 日曆 -->
+        <aside class="lg:w-[350px] w-full p-6 lg:fixed lg:h-screen flex flex-col items-center lg:items-start z-30">
             <div class="mb-8 mt-4 flex items-center justify-between w-full lg:flex-row lg:items-center">
                 <div>
                     <h1 class="text-xl font-light tracking-[0.4em] text-inherit">日常・流動</h1>
@@ -251,7 +256,7 @@
                 </button>
             </div>
 
-            <!-- 固定 350x150 日曆 -->
+            <!-- 固定 300x150 日曆 -->
             <div class="calendar-container mb-10 overflow-hidden">
                 <div class="flex justify-between items-center mb-1 px-1 h-6">
                     <span id="calMonth" class="text-[10px] font-medium text-inherit opacity-60">10月</span>
@@ -272,7 +277,7 @@
         </aside>
 
         <!-- 右側主內容 -->
-        <main class="flex-1 lg:ml-[400px] p-6 md:p-10 lg:p-16">
+        <main class="flex-1 lg:ml-[350px] p-6 md:p-10 lg:p-16">
             <div class="max-w-3xl mx-auto">
 
                 <!-- 待辦清單頁面 -->
@@ -281,7 +286,10 @@
                         <div>
                             <h2 class="text-2xl font-light opacity-80" id="listDateTitle">清單內容</h2>
                         </div>
-                        <div id="aiInsightTag" class="text-[10px] text-[#D1C7BD] animate-pulse">✨ AI 正在觀察您的流動...</div>
+                        <!-- 勵志小語顯示區 -->
+                        <div id="quoteDisplay" class="text-[10px] text-[#D1C7BD] italic text-right max-w-[200px] leading-tight">
+                            先活著再說夢想
+                        </div>
                     </header>
 
                     <!-- 新增區域 -->
@@ -330,7 +338,7 @@
 
                     <div id="todoList" class="space-y-4"></div>
                     
-                    <!-- AI 哲思小卡 -->
+                    <!-- AI 哲思小卡 (可選保留或移除) -->
                     <div id="aiPhilosophyCard" class="mt-10 p-6 rounded-[24px] bg-[var(--muji-input-bg)] border border-[#D1C7BD]/10 hidden">
                         <div class="flex items-center gap-2 mb-3 text-[#D1C7BD]">
                             <i data-lucide="sparkles" class="w-4 h-4"></i>
@@ -372,20 +380,28 @@
                         </div>
 
                         <!-- 選項管理 -->
-                        <div class="w-full max-w-md muji-card p-6 border border-black/5 dark:border-white/5">
-                            <h4 class="text-[10px] font-medium text-[#D1C7BD] uppercase tracking-widest mb-4">管理選項</h4>
-                            
-                            <div id="managementInputs" class="flex flex-col gap-2 mb-4">
-                                <input type="text" id="wheelOptionInput" class="muji-input" placeholder="新增選項名稱...">
-                                <div id="urlInputContainer" class="hidden">
-                                    <input type="url" id="wheelUrlInput" class="muji-input w-full mt-2" placeholder="參考連結 (選填)...">
+                        <div class="w-full max-w-md muji-card p-6 border border-black/5 dark:border-white/5 space-y-8">
+                            <div>
+                                <h4 class="text-[10px] font-medium text-[#D1C7BD] uppercase tracking-widest mb-4">管理選項</h4>
+                                <div id="managementInputs" class="flex flex-col gap-2 mb-6">
+                                    <input type="text" id="wheelOptionInput" class="muji-input" placeholder="名稱...">
+                                    <div id="urlInputContainer" class="hidden">
+                                        <input type="url" id="wheelUrlInput" class="muji-input w-full mt-2" placeholder="網址 (選填)...">
+                                    </div>
+                                    <button onclick="addWheelOption()" class="w-full bg-[var(--muji-input-bg)] text-[#D1C7BD] py-2.5 rounded-xl border border-[#D1C7BD]/20 hover:bg-white dark:hover:bg-black transition-colors mt-2 flex items-center justify-center gap-2 text-sm font-medium">確認新增</button>
                                 </div>
-                                <button onclick="addWheelOption()" class="w-full bg-[var(--muji-input-bg)] text-[#D1C7BD] py-2.5 rounded-xl border border-[#D1C7BD]/20 hover:bg-white dark:hover:bg-black transition-colors mt-2 flex items-center justify-center gap-2 text-sm">
-                                    <i data-lucide="plus" class="w-4 h-4"></i> 確認新增
-                                </button>
+                                <div id="optionsList" class="space-y-2 max-h-60 overflow-y-auto pr-1 custom-scrollbar text-xs">
+                                    <!-- 待選清單 -->
+                                </div>
                             </div>
 
-                            <div id="optionsList" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar text-xs"></div>
+                            <!-- 已探店區域 (僅針對口袋類別顯示) -->
+                            <div id="visitedSection" class="hidden border-t border-black/5 dark:border-white/5 pt-6">
+                                <h4 class="text-[10px] font-medium text-gray-400 uppercase tracking-widest mb-4">已探店</h4>
+                                <div id="visitedList" class="space-y-2 max-h-40 overflow-y-auto pr-1 custom-scrollbar text-xs">
+                                    <!-- 已探店清單 -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -450,7 +466,7 @@
                     </div>
                 </div>
             </div>
-            <div class="bg-[var(--muji-input-bg)] px-8 py-4 flex justify-end">
+            <div class="bg-[#FAF9F6] px-8 py-4 flex justify-end">
                 <button onclick="saveNote()" class="bg-[#4A4A4A] text-white px-10 py-2 rounded-full text-xs">儲存並更新</button>
             </div>
         </div>
@@ -465,18 +481,66 @@
         let currentCalDate = new Date(); 
         let selectedDate = new Date(); 
         let selectedIcon = 'coffee';
+
         let activeCategory = 'food';
         let currentRotation = 0;
         let isSpinning = false;
+
+        // 勵志小語庫
+        const quotes = [
+            "先活著再說夢想", "今天不努力明天更累", "躺平也是一種戰略", "成功只是晚點到", 
+            "沒天份就多睡一點", "努力不一定有用但不努力更沒用", "你不尷尬尷尬的是別人", "人生很難但我更懶", 
+            "今天也在努力不放棄放空", "夢想很遠鬧鐘很近", "先活過今天再說", "不努力就會更努力想放棄", 
+            "你可以輸但不能太早", "今天失敗明天再失敗", "成功很難但吃飯很簡單", "世界很大但床更舒服", 
+            "想變強先不想上班", "人生苦短先點外送", "有夢最美但睡更美", "努力工作努力放假", 
+            "今天不想明天也不想", "先假裝很努力", "人生就是一直重新開始", "不會就裝會", 
+            "撐過去就是下班", "今天也差一點成功", "活著已經很厲害", "夢想不能當飯但飯可以", 
+            "你不是不行只是還沒開始", "開始了就不會更難了", "人生就是大型修羅場", "先做再說錯了再改", 
+            "努力是給明天的自己", "不爽就再睡一下", "世界很累但我更累", "今天也要假裝成熟", 
+            "成功的人也會想放棄", "慢一點沒關係別停", "人生沒有白走只有白累", "你還活著就還有機會", 
+            "努力一點點就好", "不想努力就先撐著", "今天不崩潰就贏了", "夢想很遠但WiFi很近", 
+            "你可以慢但不要停", "撐住下一秒就下班", "再累也要滑手機", "人生很難但午餐要吃", 
+            "不會成功但會變強", "笑一笑就過去了"
+        ];
+
+        // 勵志小語控制
+        function initQuotes() {
+            const quoteEl = document.getElementById('quoteDisplay');
+            function changeQuote() {
+                quoteEl.style.opacity = '0';
+                setTimeout(() => {
+                    const randomIndex = Math.floor(Math.random() * quotes.length);
+                    quoteEl.innerText = quotes[randomIndex];
+                    quoteEl.style.opacity = '1';
+                }, 500);
+            }
+            setInterval(changeQuote, 10000); // 10秒更換一次
+            changeQuote(); // 初始顯示
+        }
         
-        // 更新後的口袋名單資料結構，加入 isStruck 屬性
-        let pOptions = JSON.parse(localStorage.getItem('muji_p_options_v6')) || {
-            food: [{ id: 1, title: '壽司', url: '', pinned: false, isStruck: false }],
+        // 口袋名單選項
+        let pOptions = JSON.parse(localStorage.getItem('muji_p_options_v7')) || {
+            food: [{ id: 1, title: '壽司', url: '', pinned: false, isStruck: false }, { id: 2, title: '拉麵', url: '', pinned: false, isStruck: false }],
             leisure: [{ id: 5, title: '讀一本書', url: '', pinned: false, isStruck: false }],
             restaurant: [{ id: 7, title: '鼎泰豐', url: 'https://www.dintaifung.com.tw/', pinned: false, isStruck: false }],
             cafe: [{ id: 8, title: '無印良品 Cafe', url: 'https://www.muji.com/tw/cafemeal/', pinned: false, isStruck: false }]
         };
 
+        // --- 強力鎖定縮放 ---
+        window.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+        window.addEventListener('keydown', e => {
+            if (e.ctrlKey && (e.key === '=' || e.key === '-' || e.key === '0' || e.keyCode === 187 || e.keyCode === 189 || e.keyCode === 48)) e.preventDefault();
+        });
+        document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+        document.addEventListener('gesturestart', e => e.preventDefault());
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', e => {
+            let now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) e.preventDefault();
+            lastTouchEnd = now;
+        }, false);
+
+        // --- 夜間功能 ---
         function toggleDarkMode() {
             const body = document.body;
             body.classList.toggle('dark');
@@ -494,10 +558,7 @@
             lucide.createIcons();
         }
 
-        window.addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
-        document.addEventListener('touchstart', e => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
-        document.addEventListener('gesturestart', e => e.preventDefault());
-
+        // --- 核心邏輯 ---
         function formatYMD(date) {
             const d = new Date(date);
             return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
@@ -523,20 +584,17 @@
             document.getElementById(`cat-${cat}`).classList.add('active');
             document.getElementById('resultLabel').innerHTML = "";
             const urlContainer = document.getElementById('urlInputContainer');
-            if (cat === 'restaurant' || cat === 'cafe') urlContainer.classList.remove('hidden');
-            else urlContainer.classList.add('hidden');
+            const visitedSection = document.getElementById('visitedSection');
+            if (cat === 'restaurant' || cat === 'cafe') { urlContainer.classList.remove('hidden'); visitedSection.classList.remove('hidden'); }
+            else { urlContainer.classList.add('hidden'); visitedSection.classList.add('hidden'); }
             renderWheel();
             renderOptionsList();
         }
 
         function renderWheel() {
             const svg = document.getElementById('wheel');
-            // 只顯示未劃掉的選項
             const options = pOptions[activeCategory].filter(opt => !opt.isStruck);
-            if (options.length === 0) { 
-                svg.innerHTML = `<text x="50" y="50" text-anchor="middle" fill="var(--muji-sub)" style="font-size: 4px;">請新增可用選項</text>`; 
-                return; 
-            }
+            if (options.length === 0) { svg.innerHTML = `<text x="50" y="50" text-anchor="middle" fill="var(--muji-sub)" style="font-size: 4px;">請新增可用選項</text>`; return; }
             const sliceDeg = 360 / options.length;
             let html = '';
             const isDark = document.body.classList.contains('dark');
@@ -571,7 +629,7 @@
 
         function showSpinResult(winner) {
             const label = document.getElementById('resultLabel');
-            label.innerHTML = `<div class="flex flex-col items-center gap-2"><span class="text-lg font-medium">✨ 今天決定是：${winner.title}</span><div class="flex gap-4"><button onclick="addSpinResultToTodo('${winner.title}')" class="text-[10px] text-[#D1C7BD] hover:underline flex items-center gap-1">新增至待辦</button>${winner.url ? `<a href="${winner.url}" target="_blank" class="text-[10px] text-[#D1C7BD] hover:underline">開啟連結</a>` : ''}</div></div>`;
+            label.innerHTML = `<div class="flex flex-col items-center gap-2"><span class="text-lg font-medium">✨ 今天決定是：${winner.title}</span><div class="flex gap-4"><button onclick="addSpinResultToTodo('${winner.title}')" class="text-[10px] text-[#D1C7BD] hover:underline flex items-center gap-1">新增至待辦</button>${winner.url ? `<a href="${winner.url}" target="_blank" class="text-[10px] text-[#D1C7BD] hover:underline flex items-center gap-1">開啟連結</a>` : ''}</div></div>`;
             lucide.createIcons();
         }
 
@@ -581,33 +639,13 @@
             save(); switchPage('list');
         }
 
-        // --- 轉盤選項管理邏輯：含兩段式刪除與右滑復原 ---
         function renderOptionsList() {
-            const container = document.getElementById('optionsList');
-            const sorted = [...pOptions[activeCategory]].sort((a,b) => b.pinned - a.pinned);
-            
-            container.innerHTML = sorted.map(opt => {
-                const struckCls = opt.isStruck ? 'struck-out' : '';
-                return `
-                <div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hWheelTM(event, ${opt.id})" ontouchend="hWheelTE(event, ${opt.id})">
-                    <div class="swipe-bg rounded-2xl">
-                        <div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="${opt.isStruck ? 'refresh-cw' : 'pin'}" class="w-4 h-4"></i></div>
-                        <div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div>
-                    </div>
-                    <div class="muji-card p-3 flex items-center gap-3 transition-all border-l-4 ${opt.pinned ? 'border-[#D1C7BD]' : 'border-transparent'} todo-content ${struckCls}">
-                        <div class="flex-1 truncate">
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium">${opt.title}</span>
-                                ${opt.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}
-                            </div>
-                            ${opt.url ? `<span class="text-[9px] opacity-40 truncate block">${opt.url}</span>` : ''}
-                        </div>
-                        <button onclick="removeWheelOption(${opt.id})" class="p-1 opacity-20 hover:opacity-100 hover:text-red-400 transition-all">
-                            <i data-lucide="x" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                </div>`;
-            }).join('');
+            const activeContainer = document.getElementById('optionsList'), visitedContainer = document.getElementById('visitedList');
+            const allItems = pOptions[activeCategory];
+            const activeItems = allItems.filter(o => !o.isStruck).sort((a,b) => b.pinned - a.pinned);
+            const visitedItems = allItems.filter(o => o.isStruck);
+            activeContainer.innerHTML = activeItems.map(opt => `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hWheelTM(event, ${opt.id})" ontouchend="hWheelTE(event, ${opt.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="pin" class="w-4 h-4"></i></div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div></div><div class="muji-card p-3 flex items-center gap-3 transition-all border-l-4 ${opt.pinned ? 'border-[#D1C7BD]' : 'border-transparent'} todo-content"><div class="flex-1 truncate"><div class="flex items-center gap-2"><span class="font-medium">${opt.title}</span>${opt.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}</div>${opt.url ? `<span class="text-[9px] opacity-40 truncate block">${opt.url}</span>` : ''}</div><button onclick="removeWheelOption(${opt.id})" class="p-1 opacity-20 hover:opacity-100 hover:text-red-400 transition-all"><i data-lucide="x" class="w-4 h-4"></i></button></div></div>`).join('');
+            visitedContainer.innerHTML = visitedItems.map(opt => `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hWheelTM(event, ${opt.id})" ontouchend="hWheelTE(event, ${opt.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="refresh-cw" class="w-4 h-4"></i></div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div></div><div class="muji-card p-2.5 flex items-center gap-3 transition-all visited-item todo-content"><div class="flex-1 truncate"><span class="font-light">${opt.title}</span></div><button onclick="removeWheelOption(${opt.id})" class="p-1 opacity-20 hover:text-red-400"><i data-lucide="x" class="w-3.5 h-3.5"></i></button></div></div>`).join('');
             lucide.createIcons();
         }
 
@@ -615,64 +653,43 @@
             const isPocket = (activeCategory === 'restaurant' || activeCategory === 'cafe');
             const optIndex = pOptions[activeCategory].findIndex(o => o.id === id);
             if (optIndex === -1) return;
-
-            if (isPocket) {
-                if (!pOptions[activeCategory][optIndex].isStruck) {
-                    pOptions[activeCategory][optIndex].isStruck = true;
-                    pOptions[activeCategory][optIndex].pinned = false;
-                } else {
-                    pOptions[activeCategory].splice(optIndex, 1);
-                }
-            } else {
-                pOptions[activeCategory].splice(optIndex, 1);
-            }
+            if (isPocket && !pOptions[activeCategory][optIndex].isStruck) { pOptions[activeCategory][optIndex].isStruck = true; pOptions[activeCategory][optIndex].pinned = false; }
+            else { pOptions[activeCategory].splice(optIndex, 1); }
             savePOptions();
         }
 
         function restoreWheelOption(id) {
             const optIndex = pOptions[activeCategory].findIndex(o => o.id === id);
-            if (optIndex !== -1) {
-                pOptions[activeCategory][optIndex].isStruck = false;
-                savePOptions();
-            }
+            if (optIndex !== -1) { pOptions[activeCategory][optIndex].isStruck = false; savePOptions(); }
         }
 
-        function toggleWheelPin(id) {
-            pOptions[activeCategory] = pOptions[activeCategory].map(o => o.id === id ? {...o, pinned: !o.pinned} : o);
-            savePOptions();
-        }
+        function toggleWheelPin(id) { pOptions[activeCategory] = pOptions[activeCategory].map(o => o.id === id ? {...o, pinned: !o.pinned} : o); savePOptions(); }
 
         function addWheelOption() {
-            const title = document.getElementById('wheelOptionInput').value.trim();
-            const url = document.getElementById('wheelUrlInput').value.trim();
+            const title = document.getElementById('wheelOptionInput').value.trim(), url = document.getElementById('wheelUrlInput').value.trim();
             if (!title) return;
             pOptions[activeCategory].unshift({ id: Date.now(), title, url, pinned: false, isStruck: false });
-            document.getElementById('wheelOptionInput').value = '';
-            document.getElementById('wheelUrlInput').value = '';
+            document.getElementById('wheelOptionInput').value = ''; document.getElementById('wheelUrlInput').value = '';
             savePOptions();
         }
 
-        function savePOptions() {
-            localStorage.setItem('muji_p_options_v6', JSON.stringify(pOptions));
-            renderWheel();
-            renderOptionsList();
-        }
+        function savePOptions() { localStorage.setItem('muji_p_options_v7', JSON.stringify(pOptions)); renderWheel(); renderOptionsList(); }
 
+        let tSX = 0, tSY = 0;
+        function hTS(e) { tSX = e.touches[0].clientX; tSY = e.touches[0].clientY; }
         function hWheelTM(e, id) { 
             const dx = e.touches[0].clientX - tSX; 
             if (Math.abs(dx) > Math.abs(e.touches[0].clientY - tSY)) { 
-                e.currentTarget.querySelector('.todo-content').style.transform = `translateX(${Math.max(-100, Math.min(100, dx))}px)`; 
+                const content = e.currentTarget.querySelector('.todo-content');
+                content.style.transform = `translateX(${Math.max(-100, Math.min(100, dx))}px)`; 
+                content.style.transition = 'none';
             } 
         }
         function hWheelTE(e, id) { 
             const content = e.currentTarget.querySelector('.todo-content'), x = parseInt(content.style.transform.replace('translateX(', '')) || 0; 
-            content.style.transition = 'transform 0.3s'; 
+            content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; 
             content.style.transform = 'translateX(0)'; 
-            if (x > 60) {
-                const opt = pOptions[activeCategory].find(o => o.id === id);
-                if (opt && opt.isStruck) restoreWheelOption(id);
-                else toggleWheelPin(id);
-            } 
+            if (x > 60) { const opt = pOptions[activeCategory].find(o => o.id === id); if (opt && opt.isStruck) restoreWheelOption(id); else toggleWheelPin(id); } 
             if (x < -60) removeWheelOption(id); 
         }
 
@@ -694,10 +711,11 @@
         }
 
         async function updateAIPhilosophy() {
+            const card = document.getElementById('aiPhilosophyCard'), textEl = document.getElementById('aiPhilosophyText');
             const dateStr = formatYMD(selectedDate), dayTodos = todos.filter(t => t.start.startsWith(dateStr));
-            if (dayTodos.length === 0) return document.getElementById('aiPhilosophyCard').classList.add('hidden');
+            if (dayTodos.length === 0) return card.classList.add('hidden');
             const res = await callGemini(`今天任務：${dayTodos.map(t => t.title).join('、')}。提供一句極簡建議。`, "你是一位生活哲學家。");
-            if (res) { document.getElementById('aiPhilosophyText').innerText = res.trim(); document.getElementById('aiPhilosophyCard').classList.remove('hidden'); }
+            if (res) { textEl.innerText = res.trim(); card.classList.remove('hidden'); }
         }
 
         function switchPage(page) {
@@ -740,8 +758,7 @@
         function changeMonth(step) { currentCalDate.setMonth(currentCalDate.getMonth() + step); renderCalendar(); }
         function renderCalendar() {
             const grid = document.getElementById('miniCalendarGrid'); grid.innerHTML = '';
-            const y = currentCalDate.getFullYear(), m = currentCalDate.getMonth();
-            document.getElementById('calMonth').innerText = `${y}年 ${m + 1}月`;
+            const y = currentCalDate.getFullYear(), m = currentCalDate.getMonth(); document.getElementById('calMonth').innerText = `${y}年 ${m + 1}月`;
             const first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
             for (let i = 0; i < first; i++) grid.innerHTML += `<div></div>`;
             for (let d = 1; d <= days; d++) {
@@ -751,10 +768,19 @@
             }
         }
 
-        let tSX = 0, tSY = 0;
-        function hTS(e) { tSX = e.touches[0].clientX; tSY = e.touches[0].clientY; }
-        function hTM(e, id) { const dx = e.touches[0].clientX - tSX; if (Math.abs(dx) > Math.abs(e.touches[0].clientY - tSY)) { e.currentTarget.querySelector('.todo-content').style.transform = `translateX(${Math.max(-100, Math.min(100, dx))}px)`; } }
-        function hTE(e, id) { const content = e.currentTarget.querySelector('.todo-content'), x = parseInt(content.style.transform.replace('translateX(', '')) || 0; content.style.transition = 'transform 0.3s'; content.style.transform = 'translateX(0)'; if (x > 60) togglePin(id); if (x < -60) deleteTodo(id); }
+        function hTM(e, id) { 
+            const dx = e.touches[0].clientX - tSX; 
+            if (Math.abs(dx) > Math.abs(e.touches[0].clientY - tSY)) { 
+                const content = e.currentTarget.querySelector('.todo-content');
+                content.style.transform = `translateX(${Math.max(-100, Math.min(100, dx))}px)`; 
+                content.style.transition = 'none';
+            } 
+        }
+        function hTE(e, id) { 
+            const content = e.currentTarget.querySelector('.todo-content'), x = parseInt(content.style.transform.replace('translateX(', '')) || 0; 
+            content.style.transition = 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)'; content.style.transform = 'translateX(0)'; 
+            if (x > 60) togglePin(id); if (x < -60) deleteTodo(id); 
+        }
 
         function render() {
             const list = document.getElementById('todoList'), dateStr = formatYMD(selectedDate), dp = dateStr.split('/');
@@ -762,15 +788,18 @@
             const filtered = todos.filter(t => t.start.startsWith(dateStr));
             if (filtered.length === 0) { document.getElementById('emptyState').classList.remove('hidden'); list.innerHTML = ''; return; }
             document.getElementById('emptyState').classList.add('hidden');
-            const sorted = [...filtered].sort((a,b) => b.pinned - a.pinned);
+            
+            const sorted = [...filtered].sort((a, b) => (b.pinned - a.pinned) || a.start.localeCompare(b.start));
+
             list.innerHTML = sorted.map(t => {
                 let cls = 'bg-white dark:bg-[#2C2C2E]'; if (t.completed) cls = 'item-done'; else if (t.priority === 'high') cls = 'item-high'; else if (t.priority === 'medium') cls = 'item-medium'; else if (t.priority === 'low') cls = 'item-low';
-                return `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hTM(event, ${t.id})" ontouchend="hTE(event, ${t.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="pin" class="w-4 h-4"></i></div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div></div><div class="todo-content muji-card p-4 flex items-center gap-4 ${cls} border-l-4 ${t.pinned ? 'border-[#D1C7BD]' : 'border-transparent'}"><button onclick="toggleComplete(${t.id})" class="flex-shrink-0 ${t.completed ? 'text-[#D1C7BD]' : 'opacity-20'}"><i data-lucide="${t.completed ? 'check-circle' : 'circle'}" class="w-5 h-5"></i></button><div class="flex-1 min-w-0 cursor-pointer" onclick="openModal(${t.id})"><div class="flex items-center gap-2"><h4 class="text-sm font-medium ${t.completed ? 'line-through opacity-40' : 'opacity-80'} truncate">${t.title}</h4>${t.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}</div><p class="text-[8px] opacity-40 mt-1 uppercase tracking-widest">${t.start.split(' ')[1]} ${t.scheduledEnd ? '- '+t.scheduledEnd : ''}</p></div><i data-lucide="${t.icon || 'list'}" class="w-4 h-4 opacity-20"></i></div></div>`;
+                const timeText = t.scheduledEnd ? `${t.start.split(' ')[1]} - ${t.scheduledEnd}` : t.start.split(' ')[1];
+                return `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hTM(event, ${t.id})" ontouchend="hTE(event, ${t.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="pin" class="w-4 h-4"></i></div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div></div><div class="todo-content muji-card p-4 flex items-center gap-4 ${cls} border-l-4 ${t.pinned ? 'border-[#D1C7BD]' : 'border-transparent'}"><button onclick="toggleComplete(${t.id})" class="flex-shrink-0 ${t.completed ? 'text-[#D1C7BD]' : 'opacity-20'}"><i data-lucide="${t.completed ? 'check-circle' : 'circle'}" class="w-5 h-5"></i></button><div class="flex-1 min-w-0 cursor-pointer" onclick="openModal(${t.id})"><div class="flex items-center gap-2"><h4 class="text-sm font-medium ${t.completed ? 'line-through opacity-40' : 'opacity-80'} truncate">${t.title}</h4>${t.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}</div><p class="text-[8px] opacity-40 mt-1 uppercase tracking-widest">${timeText} ${t.note ? '● 已備註' : ''}</p></div><i data-lucide="${t.icon || 'list'}" class="w-4 h-4 opacity-20"></i></div></div>`;
             }).join('');
             lucide.createIcons();
         }
 
-        initTheme(); initAddTimeInputs(); selectIcon('coffee'); switchCategory('food'); save();
+        initTheme(); initAddTimeInputs(); initQuotes(); selectIcon('coffee'); switchCategory('food'); save();
     </script>
 </body>
 </html>
