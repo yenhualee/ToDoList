@@ -2,6 +2,7 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <!-- 調整 Viewport 以限制行動裝置縮放 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>日常流動 | Minimalist MUJI Style</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,6 +11,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
+            /* 淺色模式變數 */
             --muji-bg: #F5F4F0;
             --muji-text: #4A4A4A;
             --muji-sub: #8C8C8C;
@@ -17,6 +19,8 @@
             --muji-white: #FFFFFF;
             --muji-card-bg: #FFFFFF;
             --muji-input-bg: #FAF9F6;
+            
+            /* 優先級柔和底色 - 淺色 */
             --prio-high: #FFF1F0;
             --prio-med: #FFFBEB;
             --prio-low: #F0FDF4;
@@ -24,6 +28,7 @@
             --prio-border: transparent;
         }
 
+        /* 深色模式變數 */
         body.dark {
             --muji-bg: #1C1C1E;
             --muji-text: #E5E5E7;
@@ -32,6 +37,8 @@
             --muji-white: #2C2C2E;
             --muji-card-bg: #2C2C2E;
             --muji-input-bg: #3A3A3C;
+
+            /* 優先級底色 - 深色 */
             --prio-high: #442a2a;
             --prio-med: #443d2a;
             --prio-low: #2a4433;
@@ -59,6 +66,7 @@
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s;
         }
 
+        /* 滑動容器 */
         .swipe-container {
             position: relative;
             overflow: hidden;
@@ -71,15 +79,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0 1.5rem;
+            padding: 0 1.8rem;
             background-color: var(--muji-input-bg);
             z-index: 0;
         }
         
-        /* 日曆固定 450x150 優化佈局 */
+        /* 日曆固定 350x150 優化佈局 */
         .calendar-container {
             position: relative;
-            width: 450px;
+            width: 350px;
             height: 150px;
             background: var(--muji-card-bg);
             border-radius: 16px;
@@ -114,6 +122,7 @@
             border-radius: 50%; 
         }
 
+        /* 底部導覽列 */
         .bottom-nav {
             position: fixed;
             bottom: 20px;
@@ -140,9 +149,14 @@
             color: var(--muji-sub);
             transition: all 0.3s;
         }
-        .nav-btn.active { color: var(--muji-text); }
-        .nav-btn.active i { color: var(--muji-accent); }
+        .nav-btn.active {
+            color: var(--muji-text);
+        }
+        .nav-btn.active i {
+            color: var(--muji-accent);
+        }
 
+        /* 優先級樣式 */
         .item-high { background-color: var(--prio-high); border: 1px solid var(--prio-border); }
         .item-medium { background-color: var(--prio-med); border: 1px solid var(--prio-border); }
         .item-low { background-color: var(--prio-low); border: 1px solid var(--prio-border); }
@@ -152,6 +166,7 @@
         .page-view.active { display: block; animation: fadeInUp 0.4s ease-out; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* 自定義 Input Style */
         .muji-input {
             background-color: var(--muji-input-bg);
             border: 1px solid transparent;
@@ -162,8 +177,12 @@
             outline: none;
             transition: all 0.2s;
         }
-        .muji-input:focus { background-color: var(--muji-card-bg); border-color: var(--muji-accent); }
+        .muji-input:focus {
+            background-color: var(--muji-card-bg);
+            border-color: var(--muji-accent);
+        }
 
+        /* 轉盤樣式 */
         .wheel-container {
             position: relative;
             width: 280px;
@@ -219,19 +238,20 @@
 
     <div class="max-w-7xl mx-auto flex flex-col lg:flex-row">
         
-        <!-- 左側側邊欄 -->
-        <aside class="lg:w-[500px] w-full p-6 lg:fixed lg:h-screen flex flex-col items-center lg:items-start z-30">
+        <!-- 左側側邊欄 - 寬度調整以容納 350px 日曆 -->
+        <aside class="lg:w-[400px] w-full p-6 lg:fixed lg:h-screen flex flex-col items-center lg:items-start z-30">
             <div class="mb-8 mt-4 flex items-center justify-between w-full lg:flex-row lg:items-center">
                 <div>
                     <h1 class="text-xl font-light tracking-[0.4em] text-inherit">日常・流動</h1>
                     <p class="text-[9px] text-[#A0A0A0] tracking-widest uppercase mt-1 italic">Living in the moment</p>
                 </div>
+                <!-- 模式切換按鈕 -->
                 <button onclick="toggleDarkMode()" class="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
                     <i id="theme-icon" data-lucide="moon" class="w-5 h-5 text-[#D1C7BD]"></i>
                 </button>
             </div>
 
-            <!-- 固定 450x150 日曆 -->
+            <!-- 固定 350x150 日曆 -->
             <div class="calendar-container mb-10 overflow-hidden">
                 <div class="flex justify-between items-center mb-1 px-1 h-6">
                     <span id="calMonth" class="text-[10px] font-medium text-inherit opacity-60">10月</span>
@@ -252,16 +272,19 @@
         </aside>
 
         <!-- 右側主內容 -->
-        <main class="flex-1 lg:ml-[500px] p-6 md:p-10 lg:p-16">
+        <main class="flex-1 lg:ml-[400px] p-6 md:p-10 lg:p-16">
             <div class="max-w-3xl mx-auto">
 
                 <!-- 待辦清單頁面 -->
                 <div id="page-list" class="page-view active">
                     <header class="mb-8 flex justify-between items-end">
-                        <h2 class="text-2xl font-light opacity-80" id="listDateTitle">清單內容</h2>
-                        <div id="aiInsightTag" class="text-[10px] text-[#D1C7BD] animate-pulse">✨ AI 已觀察流動</div>
+                        <div>
+                            <h2 class="text-2xl font-light opacity-80" id="listDateTitle">清單內容</h2>
+                        </div>
+                        <div id="aiInsightTag" class="text-[10px] text-[#D1C7BD] animate-pulse">✨ AI 正在觀察您的流動...</div>
                     </header>
 
+                    <!-- 新增區域 -->
                     <section class="muji-card p-6 mb-8">
                         <div class="flex flex-col gap-6">
                             <div class="flex items-start gap-4">
@@ -280,6 +303,7 @@
                                 <button onclick="selectIcon('utensils')" class="icon-btn p-2 rounded-lg opacity-40 hover:opacity-100 transition-opacity" data-icon="utensils"><i data-lucide="utensils" class="w-4 h-4"></i></button>
                             </div>
 
+                            <!-- 開始與結束時間選擇 -->
                             <div class="grid grid-cols-2 gap-4">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-[9px] opacity-40 uppercase tracking-widest ml-1">開始時間</span>
@@ -293,23 +317,28 @@
 
                             <div class="flex items-center justify-between border-t border-black/5 dark:border-white/5 pt-5">
                                 <select id="prioritySelect" class="bg-[var(--muji-input-bg)] text-[10px] px-4 py-2 rounded-full border-none outline-none text-inherit opacity-60 cursor-pointer">
-                                    <option value="low">低優先度</option>
-                                    <option value="medium" selected>一般事項</option>
-                                    <option value="high">緊急處理</option>
+                                    <option value="low">低優先度 (綠)</option>
+                                    <option value="medium" selected>一般事項 (黃)</option>
+                                    <option value="high">緊急處理 (紅)</option>
                                 </select>
-                                <button onclick="addTodo()" class="bg-[#D1C7BD] text-white px-8 py-2 rounded-full text-xs hover:bg-[#BFAE9F] transition-all">加入日程</button>
+                                <button onclick="addTodo()" class="bg-[#D1C7BD] text-white px-8 py-2 rounded-full text-xs hover:bg-[#BFAE9F] transition-all">
+                                    加入日程
+                                </button>
                             </div>
                         </div>
                     </section>
 
                     <div id="todoList" class="space-y-4"></div>
+                    
+                    <!-- AI 哲思小卡 -->
                     <div id="aiPhilosophyCard" class="mt-10 p-6 rounded-[24px] bg-[var(--muji-input-bg)] border border-[#D1C7BD]/10 hidden">
                         <div class="flex items-center gap-2 mb-3 text-[#D1C7BD]">
                             <i data-lucide="sparkles" class="w-4 h-4"></i>
-                            <span class="text-[10px] font-medium tracking-widest uppercase">✨ 簡約建議</span>
+                            <span class="text-[10px] font-medium tracking-widest uppercase">✨ 簡約生活建議</span>
                         </div>
                         <p id="aiPhilosophyText" class="text-xs opacity-60 font-light leading-relaxed italic"></p>
                     </div>
+
                     <div id="emptyState" class="hidden text-center py-20 opacity-20"><p class="text-xs italic tracking-widest">選定的日期尚無流動。</p></div>
                 </div>
 
@@ -317,6 +346,8 @@
                 <div id="page-p-zone" class="page-view">
                     <header class="mb-10 flex flex-col items-center">
                         <h2 class="text-2xl font-light opacity-80">P人 隨興轉盤</h2>
+                        <p class="text-xs opacity-40 mt-2">不知道要做什麼？交給命運來決定。</p>
+                        
                         <div class="flex flex-wrap justify-center gap-2 mt-8">
                             <button onclick="switchCategory('food')" id="cat-food" class="category-tab active">飲食美食</button>
                             <button onclick="switchCategory('leisure')" id="cat-leisure" class="category-tab">娛樂放鬆</button>
@@ -326,6 +357,7 @@
                     </header>
 
                     <div class="flex flex-col items-center space-y-12">
+                        <!-- 轉盤主體 -->
                         <div class="wheel-container">
                             <div class="wheel-pointer"><i data-lucide="triangle" class="w-full h-full fill-current rotate-180"></i></div>
                             <svg id="wheel" viewBox="0 0 100 100"></svg>
@@ -339,16 +371,20 @@
                             <div id="resultLabel" class="mb-0"></div>
                         </div>
 
+                        <!-- 選項管理 -->
                         <div class="w-full max-w-md muji-card p-6 border border-black/5 dark:border-white/5">
                             <h4 class="text-[10px] font-medium text-[#D1C7BD] uppercase tracking-widest mb-4">管理選項</h4>
+                            
                             <div id="managementInputs" class="flex flex-col gap-2 mb-4">
-                                <input type="text" id="wheelOptionInput" class="muji-input" placeholder="名稱...">
+                                <input type="text" id="wheelOptionInput" class="muji-input" placeholder="新增選項名稱...">
                                 <div id="urlInputContainer" class="hidden">
-                                    <input type="url" id="wheelUrlInput" class="muji-input w-full mt-2" placeholder="網址 (選填)...">
+                                    <input type="url" id="wheelUrlInput" class="muji-input w-full mt-2" placeholder="參考連結 (選填)...">
                                 </div>
-                                <button onclick="addWheelOption()" class="w-full bg-[var(--muji-input-bg)] text-[#D1C7BD] py-2.5 rounded-xl border border-[#D1C7BD]/20 hover:bg-white dark:hover:bg-black transition-colors mt-2 flex items-center justify-center gap-2 text-sm">確認新增</button>
+                                <button onclick="addWheelOption()" class="w-full bg-[var(--muji-input-bg)] text-[#D1C7BD] py-2.5 rounded-xl border border-[#D1C7BD]/20 hover:bg-white dark:hover:bg-black transition-colors mt-2 flex items-center justify-center gap-2 text-sm">
+                                    <i data-lucide="plus" class="w-4 h-4"></i> 確認新增
+                                </button>
                             </div>
-                            <!-- 選項清單：支援兩段式刪除與右滑復原 -->
+
                             <div id="optionsList" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar text-xs"></div>
                         </div>
                     </div>
@@ -383,6 +419,7 @@
                         <button onclick="closeModal()" class="opacity-30 hover:opacity-100 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
                     </div>
                 </div>
+
                 <div class="space-y-6">
                     <div class="grid grid-cols-2 gap-3">
                         <div class="flex flex-col gap-1">
@@ -394,18 +431,28 @@
                             <input type="time" id="modalTimeInput" class="muji-input w-full">
                         </div>
                     </div>
+
                     <div class="flex flex-col gap-1">
                         <span class="text-[9px] opacity-40 uppercase tracking-widest ml-1">緊急程度</span>
-                        <select id="modalPrioritySelect" class="muji-input w-full cursor-pointer"><option value="low">低優先度</option><option value="medium">一般事項</option><option value="high">緊急處理</option></select>
+                        <select id="modalPrioritySelect" class="muji-input w-full cursor-pointer">
+                            <option value="low">低優先度 (綠)</option>
+                            <option value="medium">一般事項 (黃)</option>
+                            <option value="high">緊急處理 (紅)</option>
+                        </select>
                     </div>
+
                     <div class="relative flex flex-col gap-1">
                         <span class="text-[9px] opacity-40 uppercase tracking-widest ml-1">任務備註</span>
                         <textarea id="modalNote" class="w-full min-h-[120px] muji-input p-4 outline-none resize-none" placeholder="輸入詳細備註..."></textarea>
-                        <div id="aiLoadingIndicator" class="absolute inset-0 bg-black/20 flex items-center justify-center hidden rounded-2xl"><span class="text-xs text-[#D1C7BD] loading-pulse">✨ AI 正在拆解任務...</span></div>
+                        <div id="aiLoadingIndicator" class="absolute inset-0 bg-black/20 flex items-center justify-center hidden rounded-2xl">
+                            <span class="text-xs text-[#D1C7BD] loading-pulse">✨ AI 正在拆解任務...</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-[var(--muji-input-bg)] px-8 py-4 flex justify-end"><button onclick="saveNote()" class="bg-[#4A4A4A] text-white px-10 py-2 rounded-full text-xs">儲存並更新</button></div>
+            <div class="bg-[var(--muji-input-bg)] px-8 py-4 flex justify-end">
+                <button onclick="saveNote()" class="bg-[#4A4A4A] text-white px-10 py-2 rounded-full text-xs">儲存並更新</button>
+            </div>
         </div>
     </div>
 
@@ -544,8 +591,8 @@
                 return `
                 <div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hWheelTM(event, ${opt.id})" ontouchend="hWheelTE(event, ${opt.id})">
                     <div class="swipe-bg rounded-2xl">
-                        <div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium">${opt.isStruck ? '復原' : '釘選'}</div>
-                        <div class="flex items-center gap-1 text-red-300 text-[10px] font-medium">刪除</div>
+                        <div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="${opt.isStruck ? 'refresh-cw' : 'pin'}" class="w-4 h-4"></i></div>
+                        <div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div>
                     </div>
                     <div class="muji-card p-3 flex items-center gap-3 transition-all border-l-4 ${opt.pinned ? 'border-[#D1C7BD]' : 'border-transparent'} todo-content ${struckCls}">
                         <div class="flex-1 truncate">
@@ -555,7 +602,6 @@
                             </div>
                             ${opt.url ? `<span class="text-[9px] opacity-40 truncate block">${opt.url}</span>` : ''}
                         </div>
-                        <!-- 小叉叉圖示：直接點擊觸發刪除邏輯 -->
                         <button onclick="removeWheelOption(${opt.id})" class="p-1 opacity-20 hover:opacity-100 hover:text-red-400 transition-all">
                             <i data-lucide="x" class="w-4 h-4"></i>
                         </button>
@@ -571,15 +617,13 @@
             if (optIndex === -1) return;
 
             if (isPocket) {
-                // 口袋類別兩段式：第一次劃掉，第二次刪除
                 if (!pOptions[activeCategory][optIndex].isStruck) {
                     pOptions[activeCategory][optIndex].isStruck = true;
-                    pOptions[activeCategory][optIndex].pinned = false; // 劃掉時取消釘選
+                    pOptions[activeCategory][optIndex].pinned = false;
                 } else {
                     pOptions[activeCategory].splice(optIndex, 1);
                 }
             } else {
-                // 普通類別直接刪除
                 pOptions[activeCategory].splice(optIndex, 1);
             }
             savePOptions();
@@ -614,7 +658,6 @@
             renderOptionsList();
         }
 
-        // --- 手勢與輔助功能 ---
         function hWheelTM(e, id) { 
             const dx = e.touches[0].clientX - tSX; 
             if (Math.abs(dx) > Math.abs(e.touches[0].clientY - tSY)) { 
@@ -625,11 +668,10 @@
             const content = e.currentTarget.querySelector('.todo-content'), x = parseInt(content.style.transform.replace('translateX(', '')) || 0; 
             content.style.transition = 'transform 0.3s'; 
             content.style.transform = 'translateX(0)'; 
-            
             if (x > 60) {
                 const opt = pOptions[activeCategory].find(o => o.id === id);
-                if (opt && opt.isStruck) restoreWheelOption(id); // 右滑復原
-                else toggleWheelPin(id); // 普通右滑釘選
+                if (opt && opt.isStruck) restoreWheelOption(id);
+                else toggleWheelPin(id);
             } 
             if (x < -60) removeWheelOption(id); 
         }
@@ -723,7 +765,7 @@
             const sorted = [...filtered].sort((a,b) => b.pinned - a.pinned);
             list.innerHTML = sorted.map(t => {
                 let cls = 'bg-white dark:bg-[#2C2C2E]'; if (t.completed) cls = 'item-done'; else if (t.priority === 'high') cls = 'item-high'; else if (t.priority === 'medium') cls = 'item-medium'; else if (t.priority === 'low') cls = 'item-low';
-                return `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hTM(event, ${t.id})" ontouchend="hTE(event, ${t.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium">釘選</div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium">刪除</div></div><div class="todo-content muji-card p-4 flex items-center gap-4 ${cls} border-l-4 ${t.pinned ? 'border-[#D1C7BD]' : 'border-transparent'}"><button onclick="toggleComplete(${t.id})" class="flex-shrink-0 ${t.completed ? 'text-[#D1C7BD]' : 'opacity-20'}"><i data-lucide="${t.completed ? 'check-circle' : 'circle'}" class="w-5 h-5"></i></button><div class="flex-1 min-w-0 cursor-pointer" onclick="openModal(${t.id})"><div class="flex items-center gap-2"><h4 class="text-sm font-medium ${t.completed ? 'line-through opacity-40' : 'opacity-80'} truncate">${t.title}</h4>${t.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}</div><p class="text-[8px] opacity-40 mt-1 uppercase tracking-widest">${t.start.split(' ')[1]} ${t.scheduledEnd ? '- '+t.scheduledEnd : ''}</p></div><i data-lucide="${t.icon || 'list'}" class="w-4 h-4 opacity-20"></i></div></div>`;
+                return `<div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hTM(event, ${t.id})" ontouchend="hTE(event, ${t.id})"><div class="swipe-bg rounded-2xl"><div class="flex items-center gap-1 text-[#D1C7BD] text-[10px] font-medium"><i data-lucide="pin" class="w-4 h-4"></i></div><div class="flex items-center gap-1 text-red-300 text-[10px] font-medium"><i data-lucide="trash-2" class="w-4 h-4"></i></div></div><div class="todo-content muji-card p-4 flex items-center gap-4 ${cls} border-l-4 ${t.pinned ? 'border-[#D1C7BD]' : 'border-transparent'}"><button onclick="toggleComplete(${t.id})" class="flex-shrink-0 ${t.completed ? 'text-[#D1C7BD]' : 'opacity-20'}"><i data-lucide="${t.completed ? 'check-circle' : 'circle'}" class="w-5 h-5"></i></button><div class="flex-1 min-w-0 cursor-pointer" onclick="openModal(${t.id})"><div class="flex items-center gap-2"><h4 class="text-sm font-medium ${t.completed ? 'line-through opacity-40' : 'opacity-80'} truncate">${t.title}</h4>${t.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}</div><p class="text-[8px] opacity-40 mt-1 uppercase tracking-widest">${t.start.split(' ')[1]} ${t.scheduledEnd ? '- '+t.scheduledEnd : ''}</p></div><i data-lucide="${t.icon || 'list'}" class="w-4 h-4 opacity-20"></i></div></div>`;
             }).join('');
             lucide.createIcons();
         }
