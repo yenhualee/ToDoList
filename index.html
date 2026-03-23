@@ -70,7 +70,6 @@
         .calendar-day {
             aspect-ratio: 1/1;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-size: 0.65rem;
@@ -248,6 +247,18 @@
                                 <button onclick="selectIcon('utensils')" class="icon-btn p-2 rounded-lg text-gray-300 hover:text-[#D1C7BD]" data-icon="utensils"><i data-lucide="utensils" class="w-4 h-4"></i></button>
                             </div>
 
+                            <!-- 新增：開始與結束時間選擇 -->
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] text-gray-400 uppercase tracking-widest ml-1">開始時間</span>
+                                    <input type="time" id="addStartTimeInput" class="muji-input w-full">
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="text-[9px] text-gray-400 uppercase tracking-widest ml-1">結束時間</span>
+                                    <input type="time" id="addEndTimeInput" class="muji-input w-full">
+                                </div>
+                            </div>
+
                             <div class="flex items-center justify-between border-t border-gray-50 pt-5">
                                 <select id="prioritySelect" class="bg-[#FAF9F6] text-[10px] px-4 py-2 rounded-full border-none outline-none text-[#7F7F7F] cursor-pointer">
                                     <option value="low">低優先度 (綠)</option>
@@ -407,6 +418,20 @@
         function formatYMD(date) {
             const d = new Date(date);
             return `${d.getFullYear()}/${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        // 初始化時間輸入框
+        function initAddTimeInputs() {
+            const now = new Date();
+            const startH = String(now.getHours()).padStart(2, '0');
+            const startM = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('addStartTimeInput').value = `${startH}:${startM}`;
+            
+            // 預設結束時間為一小時後
+            const end = new Date(now.getTime() + 60 * 60 * 1000);
+            const endH = String(end.getHours()).padStart(2, '0');
+            const endM = String(end.getMinutes()).padStart(2, '0');
+            document.getElementById('addEndTimeInput').value = `${endH}:${endM}`;
         }
 
         // --- 核心連動功能 ---
@@ -582,26 +607,31 @@
         }
 
         function addTodo() {
-            const input = document.getElementById('todoInput');
-            if (!input.value.trim()) return;
+            const titleInput = document.getElementById('todoInput');
+            const startTimeInput = document.getElementById('addStartTimeInput');
+            const endTimeInput = document.getElementById('addEndTimeInput');
             
-            // 使用選定日期的 YYYY/MM/DD 並加上當前時分
-            const now = new Date();
+            if (!titleInput.value.trim()) return;
+            
             const dateStr = formatYMD(selectedDate);
-            const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+            const startTimeStr = startTimeInput.value;
+            const endTimeStr = endTimeInput.value;
             
             todos.unshift({
                 id: Date.now(),
-                title: input.value,
+                title: titleInput.value,
                 note: '',
                 priority: document.getElementById('prioritySelect').value,
                 icon: selectedIcon,
                 pinned: false,
                 completed: false,
-                start: `${dateStr} ${timeStr}`,
-                end: null
+                start: `${dateStr} ${startTimeStr}`,
+                scheduledEnd: endTimeStr, // 存儲預計結束時間
+                end: null // 實際完成時間
             });
-            input.value = '';
+            
+            titleInput.value = '';
+            initAddTimeInputs(); // 重置時間
             save();
         }
 
@@ -674,7 +704,7 @@
             for (let i = 0; i < first; i++) grid.innerHTML += `<div></div>`;
             
             for (let d = 1; d <= days; d++) {
-                const dateKey = `${y}/${String(m + 1).padStart(2, '0')}/${String(d).padStart(2, '0')}`;
+                const dateKey = `${y}/${String(m + 1).padStart(2,'0')}/${String(d).padStart(2,'0')}`;
                 const isSelected = dateKey === formatYMD(selectedDate);
                 const dayTodos = todos.filter(t => t.start.startsWith(dateKey));
                 
@@ -742,6 +772,8 @@
                 else if (t.priority === 'medium') cls = 'item-medium';
                 else if (t.priority === 'low') cls = 'item-low';
 
+                const timeRangeText = t.scheduledEnd ? `${t.start.split(' ')[1]} - ${t.scheduledEnd}` : t.start.split(' ')[1];
+
                 return `
                     <div class="swipe-container" ontouchstart="hTS(event)" ontouchmove="hTM(event, ${t.id})" ontouchend="hTE(event, ${t.id})">
                         <div class="swipe-bg rounded-2xl">
@@ -757,7 +789,7 @@
                                     <h4 class="text-sm font-medium ${t.completed ? 'line-through text-gray-300' : 'text-gray-700'} truncate">${t.title}</h4>
                                     ${t.pinned ? '<i data-lucide="pin" class="w-2.5 h-2.5 text-[#D1C7BD] fill-current"></i>' : ''}
                                 </div>
-                                <p class="text-[8px] text-gray-300 mt-1 uppercase tracking-widest">${t.start.split(' ')[1]} ${t.note ? '● 已備註' : ''}</p>
+                                <p class="text-[8px] text-gray-300 mt-1 uppercase tracking-widest">${timeRangeText} ${t.note ? '● 已備註' : ''}</p>
                             </div>
                             <i data-lucide="${t.icon || 'list'}" class="w-4 h-4 text-gray-200"></i>
                         </div>
@@ -768,6 +800,7 @@
         }
 
         // 初始化
+        initAddTimeInputs();
         selectIcon('coffee');
         renderWheel();
         renderOptionsList();
